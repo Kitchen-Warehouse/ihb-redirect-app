@@ -7,8 +7,8 @@ const CSV_FILES = [
   'Shopify redirects - Wolstead (Ready).csv',
 ];
 
-const exactMap = {};
-const wildcardMap = {};
+// { hostname: { pathname: destination } }
+const redirectMap = {};
 let totalSkipped = 0;
 let totalErrors = 0;
 
@@ -44,26 +44,16 @@ for (const file of CSV_FILES) {
     }
 
     try {
-      const fromPath = new URL(row['Source'].trim()).pathname;
+      const sourceUrl = new URL(row['Source'].trim());
+      const hostname = sourceUrl.hostname; // e.g. "salisburyandco.com.au"
+      const fromPath = sourceUrl.pathname.replace(/\/$/, '');
+
       const toUrl = row['Redirect'].trim();
+      let toPath = toUrl;
+      if (toUrl.startsWith('www.')) toPath = 'https://' + toUrl;
 
-      let toPath;
-      if (toUrl.startsWith('http')) {
-        toPath = toUrl;
-      } else if (toUrl.startsWith('www.')) {
-        toPath = 'https://' + toUrl;
-      } else {
-        toPath = toUrl;
-      }
-
-      const normalizedFrom = fromPath.replace(/\/$/, '');
-
-      if (normalizedFrom.endsWith('*')) {
-        const base = normalizedFrom.replace(/\*$/, '');
-        wildcardMap[base] = toPath;
-      } else {
-        exactMap[normalizedFrom] = toPath;
-      }
+      if (!redirectMap[hostname]) redirectMap[hostname] = {};
+      redirectMap[hostname][fromPath] = toPath;
     } catch (error) {
       console.log(`  Row ${rowNumber}: Error - ${error.message}`);
       errorCount++;
@@ -75,12 +65,12 @@ for (const file of CSV_FILES) {
   totalErrors += errorCount;
 }
 
-const combinedMap = { ...exactMap, ...wildcardMap };
-
 fs.writeFileSync(
   'redirect-map.json',
-  JSON.stringify(combinedMap, null, 2)
+  JSON.stringify(redirectMap, null, 2)
 );
 
-console.log(`\nTotal redirects written: ${Object.keys(combinedMap).length}`);
+const totalRedirects = Object.values(redirectMap).reduce((sum, m) => sum + Object.keys(m).length, 0);
+console.log(`\nHosts: ${Object.keys(redirectMap).join(', ')}`);
+console.log(`Total redirects written: ${totalRedirects}`);
 console.log(`Total skipped: ${totalSkipped}, Total errors: ${totalErrors}`);

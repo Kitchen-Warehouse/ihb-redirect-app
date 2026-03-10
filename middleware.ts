@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import exactMap from './redirect-map.json';
+import redirectMap from './redirect-map.json';
 
 function normalizePath(pathname: string) {
   return pathname.replace(/\/$/, '');
@@ -9,50 +9,39 @@ export default function proxy(req: NextRequest) {
   const url = req.nextUrl;
   const pathname = normalizePath(url.pathname);
 
-  // Skip redirect processing for Next.js internals and API routes
   if (pathname.startsWith('/_next') || pathname.startsWith('/api')) {
     return NextResponse.next();
   }
 
-  // Don't skip files with extensions - we want to process .html files
   if (pathname.includes('.') && !pathname.endsWith('.html')) {
     return NextResponse.next();
   }
 
-  /* 1️⃣ Exact match */
-  const exact = (exactMap as Record<string, string>)[pathname];
+  const hostname = req.headers.get('host')?.replace(/:\d+$/, '') ?? '';
+  const hostMap = (redirectMap as unknown as Record<string, Record<string, string>>)[hostname];
 
-  if (exact && exact !== pathname) {
-    const normalizedExact = normalizePath(exact);
-    // Double-check to prevent identical redirects
-    console.log('Redirecting:', url);
-    if (normalizedExact !== pathname) {
-      // Check if the redirect URL is absolute (contains domain) or relative
-      const redirectUrl = exact.startsWith('http') ? exact : `https://${exact}`;
-      return NextResponse.redirect(
-        redirectUrl,
-        301
-      );
-    }
+  if (!hostMap) {
+    return NextResponse.next();
+  }
+
+  /* 1️⃣ Exact match */
+  const exact = hostMap[pathname];
+
+  if (exact) {
+    const redirectUrl = exact.startsWith('http') ? exact : `https://${exact}`;
+    console.log('Redirecting:', url.toString(), '->', redirectUrl);
+    return NextResponse.redirect(redirectUrl, 301);
   }
 
   /* 2️⃣ .html stripping */
   if (pathname.endsWith('.html')) {
     const stripped = pathname.replace(/\.html$/, '');
-    const htmlMatch =
-      (exactMap as Record<string, string>)[stripped];
+    const htmlMatch = hostMap[stripped];
 
-    if (htmlMatch && htmlMatch !== pathname) {
-      const normalizedHtmlMatch = normalizePath(htmlMatch);
-      // Prevent redirect loops
-      if (normalizedHtmlMatch !== pathname && normalizedHtmlMatch !== stripped) {
-        // Check if the redirect URL is absolute (contains domain) or relative
-        const redirectUrl = htmlMatch.startsWith('http') ? htmlMatch : `https://${htmlMatch}`;
-        return NextResponse.redirect(
-          redirectUrl,
-          301
-        );
-      }
+    if (htmlMatch) {
+      const redirectUrl = htmlMatch.startsWith('http') ? htmlMatch : `https://${htmlMatch}`;
+      console.log('Redirecting:', url.toString(), '->', redirectUrl);
+      return NextResponse.redirect(redirectUrl, 301);
     }
   }
 
