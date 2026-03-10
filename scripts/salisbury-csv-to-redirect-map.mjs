@@ -2,7 +2,7 @@ import fs from 'fs';
 import { parse } from 'csv-parse/sync';
 
 const csv = fs.readFileSync(
-  'redirects.csv'
+  'Shopify redirects - Salisbury & Co.csv'
 );
 
 const records = parse(csv, {
@@ -21,21 +21,20 @@ let errorCount = 0;
 
 for (let i = 0; i < records.length; i++) {
   const row = records[i];
-  const rowNumber = i + 2; // +2 because array is 0-indexed and CSV has header
-  
+  const rowNumber = i + 2;
+
   // Skip if either URL is missing or empty
-  if (!row['KWSS URL'] || !row['KWH URL'] || 
-      row['KWSS URL'].trim() === '' || row['KWH URL'].trim() === '') {
+  if (!row['Source'] || !row['Redirect'] ||
+      row['Source'].trim() === '' || row['Redirect'].trim() === '') {
     console.log(`Row ${rowNumber}: Skipping - missing URL(s)`);
     skippedCount++;
     continue;
   }
 
   try {
-    const fromPath = new URL(row['KWSS URL'].trim()).pathname;
-    const toUrl = row['KWH URL'].trim();
-    
-    // For destination, keep the full URL but clean it up
+    const fromPath = new URL(row['Source'].trim()).pathname;
+    const toUrl = row['Redirect'].trim();
+
     let toPath;
     if (toUrl.startsWith('http')) {
       toPath = toUrl;
@@ -45,11 +44,9 @@ for (let i = 0; i < records.length; i++) {
       toPath = toUrl;
     }
 
-    // Normalize the from path
     const normalizedFrom = fromPath.replace(/\/$/, '');
 
     if (normalizedFrom.endsWith('*')) {
-      // Handle wildcard redirects
       const base = normalizedFrom.replace(/\*$/, '');
       wildcardMap[base] = toPath;
     } else {
@@ -57,13 +54,12 @@ for (let i = 0; i < records.length; i++) {
     }
   } catch (error) {
     console.log(`Row ${rowNumber}: Error parsing URLs - ${error.message}`);
-    console.log(`  KWSS URL: ${row['KWSS URL']}`);
-    console.log(`  KWH URL: ${row['KWH URL']}`);
+    console.log(`  Source: ${row['Source']}`);
+    console.log(`  Redirect: ${row['Redirect']}`);
     errorCount++;
   }
 }
 
-// Combine both exact and wildcard maps
 const combinedMap = { ...exactMap, ...wildcardMap };
 
 fs.writeFileSync(
@@ -78,4 +74,3 @@ console.log(`Wildcard redirects: ${Object.keys(wildcardMap).length}`);
 console.log(`Total redirects: ${Object.keys(combinedMap).length}`);
 console.log(`Skipped (missing URLs): ${skippedCount}`);
 console.log(`Errors (invalid URLs): ${errorCount}`);
-console.log(`Unprocessed: ${records.length - Object.keys(combinedMap).length - skippedCount - errorCount}`);
