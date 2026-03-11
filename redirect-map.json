@@ -2,6 +2,7 @@
   "salisburyandco.com.au": {
     "": "https://www.kitchenwarehouse.com.au/brands/salisbury-co",
     "/blogs/news": "https://www.kitchenwarehouse.com.au/brands/salisbury-co",
+    "/collections/all": "https://www.kitchenwarehouse.com.au/brands/salisbury-co",
     "/collections/baltic": "https://www.kitchenwarehouse.com.au/brands/salisbury-co/salisbury-co-baltic",
     "/collections/barware": "https://www.kitchenwarehouse.com.au/brands/salisbury-co/salisbury-co-barware",
     "/collections/baskets": "https://www.kitchenwarehouse.com.au/brands/salisbury-co/salisbury-co-grove",
@@ -686,6 +687,7 @@
     "/blogs/news/roasted-cauliflower-soup": "https://www.kitchenwarehouse.com.au/blog/recipes/roasted-cauliflower-soup",
     "/blogs/news/simple-tips-and-tricks-to-care-for-your-knives": "https://www.kitchenwarehouse.com.au/blog/articles/tip-simple-tips-and-tricks-to-care-for-your-knives",
     "/blogs/news": "https://www.kitchenwarehouse.com.au/blog",
+    "/collections/all": "https://www.kitchenwarehouse.com.au/brands/yaxell",
     "/collections/featured-products": "https://www.kitchenwarehouse.com.au/brands/yaxell",
     "/collections/kitchen-shears": "https://www.kitchenwarehouse.com.au/brands/yaxell",
     "/collections/knife-block-sets": "https://www.kitchenwarehouse.com.au/brands/yaxell/yaxell-knife-block-sets",
@@ -760,6 +762,7 @@
   },
   "www.wolstead.com": {
     "": "https://www.kitchenwarehouse.com.au/brands/wolstead",
+
     "/blogs/news-1": "https://www.kitchenwarehouse.com.au/brands/wolstead",
     "/blogs/news/beef-ragu-recipe": "https://www.kitchenwarehouse.com.au/blog/recipes/recipe-slow-cooked-cherry-tomato-and-spicy-sausage-ragu",
     "/blogs/news/chicken-roast-recipe": "https://www.kitchenwarehouse.com.au/blog/recipes/roast-harissa-and-pomegranate-spatchcock-chicken",
@@ -771,6 +774,7 @@
     "/blogs/news": "https://www.kitchenwarehouse.com.au/brands/wolstead",
     "/blogs/recipes": "https://www.kitchenwarehouse.com.au/blog",
     "/collections/all-products": "https://www.kitchenwarehouse.com.au/brands/wolstead",
+    "/collections/all": "https://www.kitchenwarehouse.com.au/brands/wolstead",
     "/collections/bakeware": "https://www.kitchenwarehouse.com.au/brands/wolstead/wolstead-bakeware",
     "/collections/boards": "https://www.kitchenwarehouse.com.au/brands/wolstead/wolstead-chopping-boards",
     "/collections/calibre-knives": "https://www.kitchenwarehouse.com.au/brands/wolstead/wolstead-calibre",
